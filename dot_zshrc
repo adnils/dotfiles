@@ -15,6 +15,11 @@ if [[ -n "${SSH_AUTH_SOCK_LOCAL}" ]]; then
   export SSH_AUTH_SOCK="${SSH_AUTH_SOCK_LOCAL}"
 fi
 
+# Get auth sock in tmux
+if [ "$TMUX" ]; then
+  alias updenv="eval $(tmux show-environment -s|grep '^SSH_')"
+fi
+
 # Set the directory we want to store zinit and plugins
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
