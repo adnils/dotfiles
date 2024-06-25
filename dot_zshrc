@@ -1,49 +1,43 @@
 if [[ -f "/opt/homebrew/bin/brew" ]] then
-  # If you're using macOS, you'll want this enabled
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-# Yubikey
-if [[ -n "${SSH_AUTH_SOCK_LOCAL}" ]]; then
-  export SSH_AUTH_SOCK="${SSH_AUTH_SOCK_LOCAL}"
+# Install plugins
+if [[ ! -e ~/.local/share/zsh-syntax-highlighting ]]; then
+  git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.local/share/zsh-syntax-highlighting
+fi
+if [[ ! -e ~/.local/share/zsh-autosuggestions ]]; then
+  git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions.git ~/.local/share/zsh-autosuggestions
+fi
+if [[ ! -e ~/.local/share/zsh-completions ]]; then
+  git clone --depth=1 https://github.com/zsh-users/zsh-completions.git ~/.local/share/zsh-completions
+fi
+if [[ ! -e ~/.local/share/powerlevel10k ]]; then
+  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.local/share/powerlevel10k
 fi
 
-# Get auth sock in tmux
-if [ "$TMUX" ]; then
-  alias updenv="eval $(tmux show-environment -s|grep '^SSH_')"
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Set the directory we want to store zinit and plugins
-ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
-
-# Download Zinit, if it's not there yet
-if [ ! -d "$ZINIT_HOME" ]; then
-   mkdir -p "$(dirname $ZINIT_HOME)"
-   git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
-fi
-
-# Source/Load zinit
-source "${ZINIT_HOME}/zinit.zsh"
-
-# Add in zsh plugins
-zinit light zsh-users/zsh-syntax-highlighting
-zinit light zsh-users/zsh-completions
-zinit light zsh-users/zsh-autosuggestions
-zinit light Aloxaf/fzf-tab
-
-# Add in snippets
-zinit snippet OMZP::git
-zinit snippet OMZP::sudo
-#zinit snippet OMZP::archlinux
-#zinit snippet OMZP::aws
-#zinit snippet OMZP::kubectl
-#zinit snippet OMZP::kubectx
-zinit snippet OMZP::command-not-found
-
-# Load completions
+# Load autocomplete
 autoload -Uz compinit && compinit
 
-zinit cdreplay -q
+# Performance stuff related to syntax highlighting
+ZSH_AUTOSUGGEST_MANUAL_REBIND=1
+
+source ~/.local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ~/.local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source ~/.local/share/zsh-completions/zsh-completions.plugin.zsh
+source ~/.local/share/powerlevel10k/powerlevel10k.zsh-theme
+source ~/.p10k.zsh
+
+# Source/Load fzf
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Shell integrations
+eval "$(fzf --zsh)"
+eval "$(zoxide init --cmd cd zsh)"
 
 # Keybindings
 bindkey -e
@@ -76,22 +70,17 @@ alias ls='ls --color'
 alias vim='nvim'
 alias c='clear'
 
-# Source/Load fzf
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# Yubikey
+if [[ -n "${SSH_AUTH_SOCK_LOCAL}" ]]; then
+  export SSH_AUTH_SOCK="${SSH_AUTH_SOCK_LOCAL}"
+fi
 
-# Shell integrations
-eval "$(fzf --zsh)"
-eval "$(zoxide init --cmd cd zsh)"
+# Get auth sock in tmux
+if [ "$TMUX" ]; then
+  alias updenv="eval $(tmux show-environment -s|grep '^SSH_')"
+fi
 
-# Git prompt
-autoload -Uz vcs_info
-precmd_vcs_info() { vcs_info }
-precmd_functions+=( precmd_vcs_info )
-setopt prompt_subst
-newline=$'\n'
-PROMPT="%B%F{magenta}%m%f%b:%4~ \$vcs_info_msg_0_$newline%# "
-zstyle ':vcs_info:git:*' formats '[%F{green}%b%f]'
-
+# Automatically load env when attaching tmux
 function update_environment_from_tmux() {
   if [ -n "${TMUX}" ]; then
     eval "$(tmux show-environment -s)"
