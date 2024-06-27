@@ -3,10 +3,11 @@ if true then
 end
 
 return {
+  { "zenbones-theme/zenbones.nvim" },
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "default",
+      -- colorscheme = "zenbones",
     },
   },
 }

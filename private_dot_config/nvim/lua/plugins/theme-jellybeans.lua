@@ -3,10 +3,11 @@ if true then
 end
 
 return {
+  { "metalelf0/jellybeans-nvim" },
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "default",
+      colorscheme = "jellybeans-nvim",
     },
   },
 }

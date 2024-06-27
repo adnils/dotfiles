@@ -3,10 +3,11 @@ if true then
 end
 
 return {
+  { "rebelot/kanagawa.nvim" },
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "default",
+      colorscheme = "kanagawa",
     },
   },
 }

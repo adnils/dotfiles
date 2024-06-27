@@ -3,10 +3,11 @@ if true then
 end
 
 return {
+  { "rose-pine/neovim" },
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "default",
+      colorscheme = "rose-pine",
     },
   },
 }
