@@ -12,12 +12,11 @@ fi
 if [[ ! -e ~/.local/share/zsh-completions ]]; then
   git clone --depth=1 https://github.com/zsh-users/zsh-completions.git ~/.local/share/zsh-completions
 fi
-if [[ ! -e ~/.local/share/powerlevel10k ]]; then
-  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.local/share/powerlevel10k
-fi
 
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+# Homebrew completions
+if type brew &>/dev/null
+then
+  FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 fi
 
 # Load autocomplete
@@ -29,8 +28,6 @@ ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 source ~/.local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source ~/.local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.local/share/zsh-completions/zsh-completions.plugin.zsh
-source ~/.local/share/powerlevel10k/powerlevel10k.zsh-theme
-source ~/.p10k.zsh
 
 # Source/Load fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -38,6 +35,7 @@ source ~/.p10k.zsh
 # Shell integrations
 eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"
+eval "$(~/.local/bin/mise activate zsh)"
 
 # Keybindings
 bindkey -e
@@ -89,3 +87,5 @@ function update_environment_from_tmux() {
 
 typeset -a precmd_functions
 precmd_functions+=(update_environment_from_tmux)
+
+eval "$(starship init zsh)"
