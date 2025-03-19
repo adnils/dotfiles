@@ -7,11 +7,6 @@ export HOMEBREW_NO_ANALYTICS=1
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/bin" ]; then
-	PATH="$HOME/bin:$PATH"
-fi
-
-# set PATH so it includes user's private bin if it exists
 if [ -d "$HOME/.local/bin" ]; then
 	PATH="$HOME/.local/bin:$PATH"
 fi
@@ -23,6 +18,8 @@ fi
 if [ -d "$HOME/work/sim/pkg/devbin" ]; then
 	PATH="$HOME/work/sim/pkg/devbin:$PATH"
 fi
+
+PATH="$GOBIN:$PATH"
 
 . "$HOME/.cargo/env"
 
